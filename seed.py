@@ -1,17 +1,40 @@
 # вставка начальных данных
 from sqlalchemy.orm import Session
 from database import engine
+from datetime import date
 import models
 
 models.Base.metadata.drop_all(bind=engine)
 models.Base.metadata.create_all(bind=engine)
 with Session(bind=engine) as session:
-    c1 = models.Category(name="Еда")
-    session.add(c1)
-    p1 = models.Product(name="Яблоко", price=100, category=c1)
-    p2 = models.Product(name="Апельсин", price=100, category=c1)
-    p3 = models.Product(name="Молоко", price=100, category=c1)
-    session.add(p1)
-    session.add(p2)
-    session.add(p3)
+    g1=models.Genre(name='Триллер')
+    g2=models.Genre(name='Вестерн')
+    g3=models.Genre(name='Комедия')
+
+    m1=models.Movie(title="The Matrix",
+            year=1999,
+            genres=[g1],
+            duration=100,
+            description='научно-фантастический боевик, поставленный братьями Вачовски по собственному сценарию и спродюсированный Джоэлом Сильвером. ',
+            rating=8.7,
+            added_date=date.today())
+    
+    m2=models.Movie(title="The Matrix 2",
+            year=2004,
+            genres=[g2,g1,g3],
+            duration=120,
+            description='американский научно-фантастический боевик 2003 года, являющийся продолжением фильма «Матрица».',
+            rating=7.9,
+            added_date=date.today())
+    
+    m3=models.Movie(title="The Matrix 3",
+            year=2020,
+            genres=[g3,g2],
+            description='американский научно-фантастический боевик, являющийся продолжением фильма «Матрица: Перезагрузка»',
+            duration=136,
+            rating=6.8,
+            added_date=date.today())
+    session.add(m2)
+    session.add(m1)
+    session.add(m3)
     session.commit()
