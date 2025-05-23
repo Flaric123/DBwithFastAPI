@@ -5,6 +5,7 @@ from database import get_db
 from typing import List
 from sqlalchemy.orm import Session
 import shutil
+from auth import auth
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
@@ -28,7 +29,7 @@ def GetMovieById(movies_id: int, db: Session = Depends(get_db)):
     return movie_db
 
 @app.put('/movies/{movies_id}',response_model=PYD.MovieReturn)
-def UpdateMovie(movie_id:int, updateData: PYD.MovieUpdate, db: Session = Depends(get_db)):
+def UpdateMovie(movie_id:int, updateData: PYD.MovieUpdate, db: Session = Depends(get_db), auth=Depends(auth)):
     m1=db.query(models.Movie).filter(models.Movie.id == movie_id).first()
 
     if not m1:
@@ -51,7 +52,7 @@ def UpdateMovie(movie_id:int, updateData: PYD.MovieUpdate, db: Session = Depends
     return m1
 
 @app.delete('/movies/{movies_id}', response_model=PYD.MovieReturn)
-def DeleteMovie(movie_id:int, db:Session=Depends(get_db)):
+def DeleteMovie(movie_id:int, db:Session=Depends(get_db), auth=Depends(auth)):
     m1 = db.query(models.Movie).filter(models.Movie.id == movie_id).first()
 
     if not m1:
@@ -63,7 +64,7 @@ def DeleteMovie(movie_id:int, db:Session=Depends(get_db)):
     return m1
 
 @app.put("/movies/{movie_id}/image", response_model=PYD.MovieReturn)
-def UploadMoviePoster(movie_id:int, image: UploadFile, db:Session=Depends(get_db)):
+def UploadMoviePoster(movie_id:int, image: UploadFile, db:Session=Depends(get_db), auth=Depends(auth)):
     m1=db.query(models.Movie).filter(models.Movie.id == movie_id).first()
 
     if not m1:
@@ -87,7 +88,7 @@ def UploadMoviePoster(movie_id:int, image: UploadFile, db:Session=Depends(get_db
     return m1
 
 @app.post("/movies", response_model=PYD.MovieReturn)
-def CreateMovie(createData: PYD.MovieCreate, db: Session = Depends(get_db)):
+def CreateMovie(createData: PYD.MovieCreate, db: Session = Depends(get_db), auth=Depends(auth)):
     genre_query=db.query(models.Genre).filter(models.Genre.id.in_(createData.genres)).all()
 
     if len(genre_query) != len(createData.genres):
@@ -107,7 +108,7 @@ def GetGenres(db: Session = Depends(get_db)):
     return p1
 
 @app.post("/genres")
-def CreateGenre(createData: PYD.GenreCreate, db: Session = Depends(get_db)):
+def CreateGenre(createData: PYD.GenreCreate, db: Session = Depends(get_db), auth=Depends(auth)):
     genre_query=db.query(models.Genre).filter(models.Genre.name == createData.name).all()
 
     if genre_query:
@@ -119,7 +120,7 @@ def CreateGenre(createData: PYD.GenreCreate, db: Session = Depends(get_db)):
     db.refresh(g1)
     return g1
 
-@app.post('/users',responseModel=PYD.UserReturn)
+@app.post('/users',response_model=PYD.UserReturn)
 def CreateUser(createData: PYD.UserCreate, db: Session = Depends(get_db)):
     foundUser = db.query(models.User).filter(models.User.username == createData.username).first()
 

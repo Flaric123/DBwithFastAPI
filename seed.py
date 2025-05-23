@@ -7,6 +7,10 @@ import models
 models.Base.metadata.drop_all(bind=engine)
 models.Base.metadata.create_all(bind=engine)
 with Session(bind=engine) as session:
+    u1=models.User(username='user1',password='11111111',email='u1@mail.com')
+    u2=models.User(username='user2', password='22222222',email='u2@mail.com')
+    u3=models.User(username='user3', password='33333333',email='u3@mail.com')
+
     g1=models.Genre(name='Триллер')
     g2=models.Genre(name='Вестерн')
     g3=models.Genre(name='Комедия')
@@ -37,4 +41,5 @@ with Session(bind=engine) as session:
     session.add(m2)
     session.add(m1)
     session.add(m3)
+    session.add_all([u1,u2,u3])
     session.commit()
