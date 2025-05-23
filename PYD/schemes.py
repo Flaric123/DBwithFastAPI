@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator, HttpUrl
+from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional
 from datetime import date
 
@@ -38,3 +38,13 @@ class MovieUpdate(BaseModel):
     rating: Optional[float] = Field(None, ge=0, le=10)
     description: Optional[str] = None
     poster_url: Optional[str] = Field(..., min_length=2, max_length=200, example='example/example.png')
+
+class UserCreate(BaseModel):
+  username: str = Field(example="user1", min_length=3, max_length=60)
+  password: str = Field(example="11111111", min_length=8, max_length=60)
+  email: EmailStr | None = Field(None)
+
+class UserReturn(BaseModel):
+  id: int
+  username: str = Field(example="user1")
+  email: EmailStr | None = Field(None, example="example@email.com")

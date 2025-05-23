@@ -118,3 +118,16 @@ def CreateGenre(createData: PYD.GenreCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(g1)
     return g1
+
+@app.post('/users',responseModel=PYD.UserReturn)
+def CreateUser(createData: PYD.UserCreate, db: Session = Depends(get_db)):
+    foundUser = db.query(models.User).filter(models.User.username == createData.username).first()
+
+    if foundUser:
+        raise HTTPException(400, "Пользователь с таким именен уже существует")
+  
+    u1 = models.User(**createData.model_dump())
+    db.add(u1)
+    db.commit()
+
+    return u1
